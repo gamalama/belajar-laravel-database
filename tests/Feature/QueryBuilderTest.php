@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 use function Laravel\Prompts\select;
+use function PHPUnit\Framework\assertCount;
 
 class QueryBuilderTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+        DB::delete("delete from products");
         DB::delete('delete from categories');
     }
 
@@ -219,6 +221,20 @@ class QueryBuilderTest extends TestCase
             ->join("categories", "products.category_id", '=', 'categories.id')
             ->select("products.id", "products.name", "products.price", "categories.name as category_name")
             ->get();
+
+        self::assertCount(2, $collection);
+
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testOrdering()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table("products")->whereNotNull("id")
+            ->orderBy("price", "desc")->orderBy("name", "asc")->get();
 
         self::assertCount(2, $collection);
 
