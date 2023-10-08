@@ -193,5 +193,37 @@ class QueryBuilderTest extends TestCase
         self::assertCount(0, $collection);
     }
 
+    public function insertProducts()
+    {
+        $this->insertCategories();
 
+        DB::table("products")->insert([
+            "id" => "1",
+            "name" => "iPhone 14 Pro Max",
+            "category_id" => "SMARTPHONE",
+            "price" => 20000000
+        ]);
+        DB::table("products")->insert([
+            "id" => "1",
+            "name" => "Samsung Galaxy S21 Ultra",
+            "category_id" => "SMARTPHONE",
+            "price" => 18000000
+        ]);
+    }
+
+    public function testJoin()
+    {
+        $this->insertProducts();
+
+        $collection = DB::table("products")
+            ->join("categories", "products.category_id", '=', 'categories.id')
+            ->select("products.id", "products.name", "products.price", "categories.name as category_name")
+            ->get();
+
+        self::assertCount(2, $collection);
+
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
 }
