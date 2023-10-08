@@ -138,4 +138,50 @@ class QueryBuilderTest extends TestCase
             Log::info(json_encode($item));
         });
     }
+
+    public function testUpdate()
+    {
+        $this->insertCategories();
+
+        DB::table("categories")->where("id", "=", "SMARTPHONE")->update([
+            "name" => "Handphone"
+        ]);
+
+        $collection = DB::table("categories")->where("name", "=", "Handphone")->get();
+        self::assertCount(1, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testUpdateOrInsert()
+    {
+        DB::table("categories")->updateOrInsert([
+            "id" => "VOUCHER"
+        ], [
+            "name" => "Voucher",
+            "description" => "Ticket and Voucher",
+            "created_at" => "2020-10-10 10:10:10"
+        ]);
+
+        $collection = DB::table("categories")->where("id", "=", "Voucher")->get();
+        self::assertCount(1, $collection);
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+
+    public function testIncrement()
+    {
+        DB::table("counters")->where("id", '=', 'sample')->increment('counter', 1);
+
+        $collection = DB::table("counters")->where("id", '=', 'sample')->get();
+        self::assertCount(1, $collection);
+
+        $collection->each(function ($item) {
+            Log::info(json_encode($item));
+        });
+    }
+
+
 }
