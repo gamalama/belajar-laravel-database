@@ -206,7 +206,7 @@ class QueryBuilderTest extends TestCase
             "price" => 20000000
         ]);
         DB::table("products")->insert([
-            "id" => "1",
+            "id" => "2",
             "name" => "Samsung Galaxy S21 Ultra",
             "category_id" => "SMARTPHONE",
             "price" => 18000000
@@ -393,5 +393,19 @@ class QueryBuilderTest extends TestCase
             ->get();
 
         self::assertCount(0, $collection);
+    }
+
+    public function testLocking()
+    {
+        $this->insertProducts();
+
+        DB::transaction(function () {
+            $collection = DB::table("products")
+                ->where('id', '=', '1')
+                ->lockForUpdate()
+                ->get();
+
+            self::assertCount(1, $collection);
+        });
     }
 }
