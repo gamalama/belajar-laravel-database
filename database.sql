@@ -13,3 +13,10 @@ create table products
 select * from products;
 select * from categories;
 select * from counters;
+
+drop table products;
+drop table categories;
+drop table counters;
+
+show tables;
+
